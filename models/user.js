@@ -7,14 +7,15 @@ const mongoose = require('mongoose');
 const schema = new mongoose.Schema({
   facebookId: {
     type: String,
-    required: true
+    required: true,
+    index: { unique: true }
   },
   name: {
     type: String,
     required: true
   },
   reviews: [{
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Review'
   }]
 }, { timestamps: true });

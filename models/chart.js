@@ -10,7 +10,7 @@ const schema = new mongoose.Schema({
     required: true
   },
   playlists: [{
-    type: Schema.Types.ObjectId,
+    type: mongoose.Schema.Types.ObjectId,
     ref: 'Playlist'
   }]
 }, { timestamps: true });

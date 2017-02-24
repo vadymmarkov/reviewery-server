@@ -7,7 +7,8 @@ const mongoose = require('mongoose');
 const schema = new mongoose.Schema({
   id: {
     type: String,
-    required: true
+    required: true,
+    index: { unique: true }
   },
   name: {
     type: String,

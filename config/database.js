@@ -4,15 +4,21 @@
 const mongoose = require('mongoose');
 
 // Set the database name
-const dbUrl = load('MONGODB_URI');
+const dbUrl = process.env['MONGODB_URI'];
 
 // Connect to the database
 mongoose.connect(dbUrl);
 
+// Set Promise provider to bluebird
+mongoose.Promise = require('bluebird');
+
 // Get notified if the connection was successful or not
 const db = mongoose.connection;
 
-db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', () => {
-  console.log(`Connected to the ${dbName} database`);
+  console.log(`Connected to the ${dbUrl} database`);
+});
+
+db.on('error', () => {
+  console.log(`Connot connect to the ${dbUrl} database`);
 });

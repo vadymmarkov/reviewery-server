@@ -7,7 +7,8 @@ const mongoose = require('mongoose');
 const schema = new mongoose.Schema({
   id: {
     type: String,
-    required: true
+    required: true,
+    index: { unique: true }
   },
   name: {
     type: String,
@@ -20,7 +21,11 @@ const schema = new mongoose.Schema({
   artist: {
     type: String,
     required: true
-  }
+  },
+  reviews: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Review'
+  }]
 }, { timestamps: true });
 
 module.exports = mongoose.model('tracks', schema);
