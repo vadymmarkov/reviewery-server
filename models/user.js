@@ -3,6 +3,7 @@
 'use strict';
 
 const mongoose = require('mongoose');
+var findOrCreate = require('mongoose-findorcreate');
 
 const schema = new mongoose.Schema({
   facebookId: {
@@ -13,11 +14,9 @@ const schema = new mongoose.Schema({
   name: {
     type: String,
     required: true
-  },
-  reviews: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Review'
-  }]
+  }
 }, { timestamps: true });
+
+schema.plugin(findOrCreate);
 
 module.exports = mongoose.model('User', schema);

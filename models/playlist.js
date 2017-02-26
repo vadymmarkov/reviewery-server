@@ -3,6 +3,7 @@
 'use strict';
 
 const mongoose = require('mongoose');
+const Track = require('./track');
 
 const schema = new mongoose.Schema({
   id: {
@@ -17,15 +18,12 @@ const schema = new mongoose.Schema({
   href: {
     type: String,
     required: true
-  }
+  },
   imageUrl: {
     type: String,
     default: null
   },
-  chart: {
-    type: Schema.ObjectId,
-    ref: 'Chart'
-  }
+  tracks: [Track.schema]
 }, { timestamps: true });
 
 module.exports = mongoose.model('Playlist', schema);

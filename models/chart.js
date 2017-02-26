@@ -3,16 +3,14 @@
 'use strict';
 
 const mongoose = require('mongoose');
+const Playlist = require('./playlist');
 
 const schema = new mongoose.Schema({
   name: {
     type: String,
     required: true
   },
-  playlists: [{
-    type: mongoose.Schema.Types.ObjectId,
-    ref: 'Playlist'
-  }]
+  playlists: [Playlist.schema]
 }, { timestamps: true });
 
 module.exports = mongoose.model('Chart', schema);
