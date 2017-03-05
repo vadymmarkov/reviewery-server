@@ -4,6 +4,7 @@
 
 const express = require('express');
 const router = express.Router();
+const mongoose = require('mongoose');
 const Chart = require('../../models/chart');
 const Playlist = require('../../models/playlist');
 const Review = require('../../models/review');
@@ -14,9 +15,17 @@ var passport = require('passport');
 router.route('/')
   // List
   .get(passport.authenticate('facebook-token'), function (req, res) {
-    Chart.find({}).sort({ createdAt: -1 }).exec()
+    Chart.find({})
+    .select('name playlists')
+    .sort({ createdAt: -1 }).exec()
     .then(function(charts) {
-      return res.json(charts);
+      return res.json(charts.map(function(chart){
+        return {
+          _id: chart._id,
+          name: chart.name,
+          playlistsCount: chart.playlists.length
+        };
+      }));
     })
     .catch(function(err){
       return res.send(err);
@@ -30,7 +39,10 @@ router.route('/')
 
     chart.save()
       .then(function(chart) {
-        return res.json(chart);
+        return res.status(201).send({
+          success: true,
+          message: "Chart has been created!",
+        });
       })
       .catch(function(err){
         return res.send(err);
@@ -40,9 +52,22 @@ router.route('/')
 // Single
 router.route('/:id')
   .get(passport.authenticate('facebook-token'), function (req, res) {
-    Chart.findById(req.params.id).exec()
+    Chart.findById(req.params.id)
+    .select('name playlists')
+    .exec()
     .then(function(chart) {
-      return res.json(chart);
+      return res.json({
+        _id: chart._id,
+        name: chart.name,
+        playlists: chart.playlists.map(function(playlist){
+          return {
+            _id: playlist._id,
+            name: playlist.name,
+            imageUrl: playlist.imageUrl,
+            tracksCount: playlist.tracks.length
+          }
+        })
+      });
     })
     .catch(function(err){
       return res.send(err);
@@ -71,16 +96,6 @@ router.route('/:id')
   });
 
 router.route('/:chartId/playlists')
-  // List
-  .get(passport.authenticate('facebook-token'), function (req, res) {
-    Chart.findById(req.params.chartId).exec()
-    .then(function(chart) {
-      return res.json(chart.playlists);
-    })
-    .catch(function(err){
-      return res.send(err);
-    });
-  })
   // Create
   .post(passport.authenticate('facebook-token'), function (req, res) {
     Chart.findById(req.params.chartId).exec()
@@ -105,11 +120,18 @@ router.route('/:chartId/playlists')
 router.route('/:chartId/playlists/:playlistId')
   // Playlist detail
   .get(passport.authenticate('facebook-token'), function(req, res) {
-    Chart.findById(req.params.chartId).exec()
-    .then(function(chart) {
-      return res.json(chart.playlists.id(playlistId));
+    Chart.findOne({
+      _id: req.params.chartId,
+      'playlists._id': req.params.playlistId
     })
-    .catch(function(err){
+    .select('playlists')
+    .exec()
+    .then(function(chart) {
+      var playlist = chart.playlists.pop();
+      var userId = req.user._id.toString();
+      return res.json(playlist.toJSON({ userId: userId, transform: true }));
+    })
+    .catch(function(err) {
       return res.send(err);
     });
   })
