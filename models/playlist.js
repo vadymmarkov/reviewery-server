@@ -1,12 +1,10 @@
-// models/playlist.js
-
 'use strict';
 
 const mongoose = require('mongoose');
 const Track = require('./track');
 
 const schema = new mongoose.Schema({
-  id: {
+  playlistId: {
     type: String,
     required: true,
     index: { unique: true }

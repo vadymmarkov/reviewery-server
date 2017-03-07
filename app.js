@@ -39,19 +39,20 @@ app.use(function(req, res, next) {
   next(err);
 });
 
+// Error handler
 app.use(function (err, req, res, next) {
   if (req.isAuthenticated()) {
-    return next();
+    next();
+  } else if (!req.isAuthenticated()) {
+    var err = new Error('User not logged in');
+    err.status = 401;
+    next(err);
+  } else {
+    next(err);
   }
-
-  res.status(401).send({
-    success: false,
-    message: "User not logged in",
-  });
 });
 
-// Error handler
-app.use(function(err, req, res, next) {
+app.use(function (err, req, res, next) {
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};

@@ -1,12 +1,10 @@
-// models/track.js
-
 'use strict';
 
 const mongoose = require('mongoose');
 const Review = require('./review');
 
 const schema = new mongoose.Schema({
-  id: {
+  trackId: {
     type: String,
     required: true,
     index: { unique: true }

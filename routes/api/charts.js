@@ -1,5 +1,3 @@
-// routes/api/charts.js
-
 'use strict'
 
 const express = require('express');
@@ -14,7 +12,7 @@ var passport = require('passport');
 // Collection
 router.route('/')
   // List
-  .get(passport.authenticate('facebook-token'), function (req, res) {
+  .get(passport.authenticate('facebook-token'), function(req, res) {
     Chart.find({})
     .select('name playlists')
     .sort({ createdAt: -1 }).exec()
@@ -32,7 +30,7 @@ router.route('/')
     });
   })
   // Create
-  .post(passport.authenticate('facebook-token'), function (req, res) {
+  .post(passport.authenticate('facebook-token'), function(req, res) {
     const chart = new Chart({
       name: req.body.name
     });
@@ -51,7 +49,7 @@ router.route('/')
 
 // Single
 router.route('/:id')
-  .get(passport.authenticate('facebook-token'), function (req, res) {
+  .get(passport.authenticate('facebook-token'), function(req, res) {
     Chart.findById(req.params.id)
     .select('name playlists')
     .exec()
@@ -73,7 +71,7 @@ router.route('/:id')
       return res.send(err);
     });
   })
-  .put(passport.authenticate('facebook-token'), function (req, res) {
+  .put(passport.authenticate('facebook-token'), function(req, res) {
     Chart.findByIdAndUpdate(req.params.id, {
       name: req.body.name
     }, {new: true})
@@ -85,7 +83,7 @@ router.route('/:id')
       return res.send(err);
     });
   })
-  .delete(passport.authenticate('facebook-token'), function (req, res) {
+  .delete(passport.authenticate('facebook-token'), function(req, res) {
     Chart.remove({ _id: req.params.id }).exec()
     .then(function() {
       return res.json({ message: 'Chart has been removed!' });
@@ -97,7 +95,7 @@ router.route('/:id')
 
 router.route('/:chartId/playlists')
   // Create
-  .post(passport.authenticate('facebook-token'), function (req, res) {
+  .post(passport.authenticate('facebook-token'), function(req, res) {
     Chart.findById(req.params.chartId).exec()
     .then(function(chart) {
       return spotifyApi.getPlaylist(req.body.userId, req.body.playlistId)
@@ -136,10 +134,10 @@ router.route('/:chartId/playlists/:playlistId')
     });
   })
   // Delete playlist
-  .delete(passport.authenticate('facebook-token'), function (req, res) {
+  .delete(passport.authenticate('facebook-token'), function(req, res) {
     Chart.findById(req.params.chartId).exec()
     .then(function(chart) {
-      chart.playlists.id(playlistId).remove();
+      chart.playlists.id(req.params.playlistId).remove();
       return chart.save();
     })
     .then(function() {
@@ -153,30 +151,34 @@ router.route('/:chartId/playlists/:playlistId')
 router.route('/:chartId/playlists/:playlistId/review/:trackId')
   // Add review
   .post(passport.authenticate('facebook-token'), function(req, res) {
-    var userId = req.user._id.toString()
-    var rating = req.body.rating
+    var userId = req.user._id.toString();
+    var playlistId = req.params.playlistId;
+    var trackId = req.params.trackId;
+    var rating = req.body.rating;
 
     Chart.findById(req.params.chartId)
-    .where('playlists.tracks.reviews', {$elemMatch: {userId: userId }})
     .exec()
     .then(function(chart) {
-      if (chart != null) {
-        var error = new Error("Track can't be reviewed twice by the same user!");
-        error.status = 400;
-        throw error;
-      }
-
       if (!rating || rating < 0 || req.body.rating > 10) {
         var error = new Error("Invalid rating!");
         error.status = 400;
         throw error;
       }
 
-      return Chart.findById(req.params.chartId)
+      return chart;
     })
     .then(function(chart) {
-      var playlistId = req.params.playlistId;
-      var trackId = req.params.trackId;
+      let reviews = chart.playlists.id(playlistId).tracks.id(trackId).reviews;
+      let userReview = reviews.filter(function(review) {
+        return review.userId === userId;
+      }).pop();
+
+      if (userReview != null) {
+        var error = new Error("Track can't be reviewed twice by the same user!");
+        error.status = 400;
+        throw error;
+      }
+
       const review = new Review({
         rating: rating,
         userId: userId
@@ -191,8 +193,9 @@ router.route('/:chartId/playlists/:playlistId/review/:trackId')
       });
     })
     .catch(function(err){
-      return res.status(err.status).send({
-        message: err.message,
+      const status = err.status ? err.status : 500;
+      return res.status(status).send({
+        message: err.message
       });
     });
   });

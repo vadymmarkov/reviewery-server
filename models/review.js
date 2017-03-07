@@ -1,5 +1,3 @@
-// models/review.js
-
 'use strict';
 
 const mongoose = require('mongoose');

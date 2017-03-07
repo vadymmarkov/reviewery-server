@@ -1,8 +1,7 @@
 'use strict';
 
-// Dependencies
-var FacebookTokenStrategy = require('passport-facebook-token');
-var passport = require('passport');
+const FacebookTokenStrategy = require('passport-facebook-token');
+const passport = require('passport');
 const User = require('../models/user');
 
 // Auth strategy

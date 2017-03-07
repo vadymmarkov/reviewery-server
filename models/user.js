@@ -1,5 +1,3 @@
-// models/user.js
-
 'use strict';
 
 const mongoose = require('mongoose');
