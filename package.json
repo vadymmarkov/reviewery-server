@@ -1,6 +1,6 @@
 {
   "name": "reviewery-server",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "private": true,
   "scripts": {
     "start": "node ./bin/www"
@@ -18,5 +18,8 @@
     "pug": "~2.0.0-beta10",
     "serve-favicon": "~2.3.2",
     "spotify-web-api-node": "~2.3.6"
+  },
+  "engines": {
+    "node": "7.5.0"
   }
 }
