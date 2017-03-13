@@ -21,6 +21,10 @@ const schema = new mongoose.Schema({
     type: String,
     default: null
   },
+  isReviewed: {
+    type: Boolean,
+    default: false
+  },
   tracks: [Track.schema]
 }, { timestamps: true });
 

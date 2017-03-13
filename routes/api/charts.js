@@ -127,6 +127,11 @@ router.route('/:chartId/playlists/:playlistId')
     .then(function(chart) {
       var playlist = chart.playlists.pop();
       var userId = req.user._id.toString();
+
+      if (req.query.total && playlist.isReviewed) {
+        return res.json(playlist.toJSON({ total: true, transform: true }));
+      }
+
       return res.json(playlist.toJSON({ userId: userId, transform: true }));
     })
     .catch(function(err) {
