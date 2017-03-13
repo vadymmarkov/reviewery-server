@@ -9,9 +9,9 @@ const Review = require('../../models/review');
 const spotifyApi = require('../../lib/spotify');
 var passport = require('passport');
 
-// Collection
+// Charts
 router.route('/')
-  // List
+  // Chart list
   .get(passport.authenticate('facebook-token'), function(req, res) {
     Chart.find({})
     .select('name playlists')
@@ -29,7 +29,7 @@ router.route('/')
       return res.send(err);
     });
   })
-  // Create
+  // Create a chart
   .post(passport.authenticate('facebook-token'), function(req, res) {
     const chart = new Chart({
       name: req.body.name
@@ -47,16 +47,18 @@ router.route('/')
       });
   });
 
-// Single
+// A single chart
 router.route('/:id')
+  // Fetch a chart
   .get(passport.authenticate('facebook-token'), function(req, res) {
     Chart.findById(req.params.id)
-    .select('name playlists')
+    .select('name isReviewed playlists')
     .exec()
     .then(function(chart) {
       return res.json({
         _id: chart._id,
         name: chart.name,
+        isReviewed: chart.isReviewed,
         playlists: chart.playlists.map(function(playlist){
           return {
             _id: playlist._id,
@@ -71,18 +73,7 @@ router.route('/:id')
       return res.send(err);
     });
   })
-  .put(passport.authenticate('facebook-token'), function(req, res) {
-    Chart.findByIdAndUpdate(req.params.id, {
-      name: req.body.name
-    }, {new: true})
-    .exec()
-    .then(function(chart) {
-      return res.json(chart);
-    })
-    .catch(function(err){
-      return res.send(err);
-    });
-  })
+  // Delete a chart
   .delete(passport.authenticate('facebook-token'), function(req, res) {
     Chart.remove({ _id: req.params.id }).exec()
     .then(function() {
@@ -93,6 +84,24 @@ router.route('/:id')
     });
   });
 
+// Review a chart
+router.route('/:chartId/review')
+  .patch(passport.authenticate('facebook-token'), function(req, res) {
+    Chart.findByIdAndUpdate(req.params.chartId, {
+      isReviewed: true,
+    }, {new: true})
+    .exec()
+    .then(function(chart) {
+      return res.status(201).send({
+        message: "Chart has been reviewed!",
+      });
+    })
+    .catch(function(err){
+      return res.send(err);
+    });
+  });
+
+// Chart top tracks
 router.route('/:chartId/top')
   .get(passport.authenticate('facebook-token'), function(req, res) {
     Chart.findById(req.params.chartId).exec()
@@ -119,8 +128,9 @@ router.route('/:chartId/top')
     });
   })
 
+// Playlists
 router.route('/:chartId/playlists')
-  // Create
+  // Create a playlist
   .post(passport.authenticate('facebook-token'), function(req, res) {
     Chart.findById(req.params.chartId).exec()
     .then(function(chart) {
@@ -141,6 +151,7 @@ router.route('/:chartId/playlists')
     });
   });
 
+// A single playlist
 router.route('/:chartId/playlists/:playlistId')
   // Playlist detail
   .get(passport.authenticate('facebook-token'), function(req, res) {
@@ -159,7 +170,7 @@ router.route('/:chartId/playlists/:playlistId')
       return res.send(err);
     });
   })
-  // Delete playlist
+  // Delete a playlist
   .delete(passport.authenticate('facebook-token'), function(req, res) {
     Chart.findById(req.params.chartId).exec()
     .then(function(chart) {
@@ -174,8 +185,26 @@ router.route('/:chartId/playlists/:playlistId')
     });
   });
 
+// Review a playlist
+router.route('/:chartId/playlists/:playlistId/review')
+  .patch(passport.authenticate('facebook-token'), function(req, res) {
+    Chart.findById(req.params.chartId).exec()
+    .then(function(chart) {
+      chart.playlists.id(req.params.playlistId).isReviewed = true;
+      return chart.save();
+    })
+    .then(function(chart) {
+      return res.status(201).send({
+        message: "Playlist has been reviewed!",
+      });
+    })
+    .catch(function(err){
+      return res.send(err);
+    });
+  });
+
+// Playlist top tracks
 router.route('/:chartId/playlists/:playlistId/top')
-  // Playlist detail
   .get(passport.authenticate('facebook-token'), function(req, res) {
     Chart.findOne({
       _id: req.params.chartId,
@@ -203,8 +232,8 @@ router.route('/:chartId/playlists/:playlistId/top')
     });
   });
 
+// Add a track review
 router.route('/:chartId/playlists/:playlistId/review/:trackId')
-  // Add review
   .post(passport.authenticate('facebook-token'), function(req, res) {
     var userId = req.user._id.toString();
     var playlistId = req.params.playlistId;
