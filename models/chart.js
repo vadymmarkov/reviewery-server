@@ -8,6 +8,10 @@ const schema = new mongoose.Schema({
     type: String,
     required: true
   },
+  isReviewed: {
+    type: Boolean,
+    default: false
+  },
   playlists: [Playlist.schema]
 }, { timestamps: true });
 

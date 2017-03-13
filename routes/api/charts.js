@@ -93,6 +93,32 @@ router.route('/:id')
     });
   });
 
+router.route('/:chartId/top')
+  .get(passport.authenticate('facebook-token'), function(req, res) {
+    Chart.findById(req.params.chartId).exec()
+    .then(function(chart) {
+      if (chart.isReviewed) {
+        let trackArrays = chart.playlists.map(function(playlist){
+          return playlist.tracks;
+        });
+        let tracks = [].concat.apply([], trackArrays)
+          .map(function(track){
+            return track.toJSON({ total: true, transform: true })
+          })
+          .sort(function(a, b) {
+            return b.rating - a.rating;
+          });
+
+        return res.json(tracks);
+      }
+
+      res.json([]);
+    })
+    .catch(function(err){
+      return res.send(err);
+    });
+  })
+
 router.route('/:chartId/playlists')
   // Create
   .post(passport.authenticate('facebook-token'), function(req, res) {
@@ -144,6 +170,35 @@ router.route('/:chartId/playlists/:playlistId')
       return res.json({ message: 'Playlist has been removed!' });
     })
     .catch(function(err){
+      return res.send(err);
+    });
+  });
+
+router.route('/:chartId/playlists/:playlistId/top')
+  // Playlist detail
+  .get(passport.authenticate('facebook-token'), function(req, res) {
+    Chart.findOne({
+      _id: req.params.chartId,
+      'playlists._id': req.params.playlistId
+    })
+    .select('playlists')
+    .exec()
+    .then(function(chart) {
+      var playlist = chart.playlists.pop();
+
+      if (playlist.isReviewed) {
+        let tracks = playlist.tracks
+          .map(function(track){
+            return track.toJSON({ total: true, transform: true })
+          }).sort(function(a, b) {
+            return b.rating - a.rating;
+          });
+        return res.json(tracks);
+      }
+
+      res.json([]);
+    })
+    .catch(function(err) {
       return res.send(err);
     });
   });
