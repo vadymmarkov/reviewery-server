@@ -155,14 +155,9 @@ router.route('/:chartId/playlists')
 router.route('/:chartId/playlists/:playlistId')
   // Playlist detail
   .get(passport.authenticate('facebook-token'), function(req, res) {
-    Chart.findOne({
-      _id: req.params.chartId,
-      'playlists._id': req.params.playlistId
-    })
-    .select('playlists')
-    .exec()
+    Chart.findById(req.params.chartId).exec()
     .then(function(chart) {
-      var playlist = chart.playlists.pop();
+      var playlist = chart.playlists.id(req.params.playlistId);
       var userId = req.user._id.toString();
       return res.json(playlist.toJSON({ userId: userId, transform: true }));
     })
@@ -206,14 +201,9 @@ router.route('/:chartId/playlists/:playlistId/review')
 // Playlist top tracks
 router.route('/:chartId/playlists/:playlistId/top')
   .get(passport.authenticate('facebook-token'), function(req, res) {
-    Chart.findOne({
-      _id: req.params.chartId,
-      'playlists._id': req.params.playlistId
-    })
-    .select('playlists')
-    .exec()
+    Chart.findById(req.params.chartId).exec()
     .then(function(chart) {
-      var playlist = chart.playlists.pop();
+      var playlist = chart.playlists.id(req.params.playlistId);
 
       if (playlist.isReviewed) {
         let tracks = playlist.tracks
