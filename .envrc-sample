@@ -1,0 +1,5 @@
+export MONGODB_URI=''
+export FACEBOOK_APP_ID=''
+export FACEBOOK_APP_SECRET=''
+export SPOTIFY_CLIENT_ID=''
+export SPOTIFY_CLIENT_SECRET=''
