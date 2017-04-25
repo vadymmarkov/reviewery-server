@@ -1,8 +1,9 @@
 # Description
 [Node.js](https://nodejs.org) server for [Reviewery iOS application](https://github.com/vadymmarkov/reviewery-mobile).
+
 **Reviewery** is an iOS application to rate songs in
 [Spotify](https://www.spotify.com) playlists. It's a hobby project built in
-React Native. Read more in my [Medium article].
+[React Native](https://facebook.github.io/react-native/). Read more in my [Medium article].
 
 # Packages
 - [Express](http://expressjs.com) server framework
