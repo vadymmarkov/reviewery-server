@@ -3,7 +3,7 @@
 
 **Reviewery** is an iOS application to rate songs in
 [Spotify](https://www.spotify.com) playlists. It's a hobby project built in
-[React Native](https://facebook.github.io/react-native/). Read more in my [Medium article].
+[React Native](https://facebook.github.io/react-native/). Read more in my [Medium article](https://t.co/7qONtlRGxr).
 
 # Packages
 - [Express](http://expressjs.com) server framework
