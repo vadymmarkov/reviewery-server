@@ -20,6 +20,6 @@
     "spotify-web-api-node": "~2.3.6"
   },
   "engines": {
-    "node": "7.5.0"
+    "node": "7.10.1"
   }
 }
