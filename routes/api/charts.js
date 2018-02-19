@@ -233,7 +233,7 @@ router.route('/:chartId/playlists/:playlistId/review/:trackId')
     Chart.findById(req.params.chartId)
     .exec()
     .then(function(chart) {
-      if (!rating || rating < 0 || req.body.rating > 10) {
+      if (!rating || rating < 0 || req.body.rating > 12) {
         var error = new Error("Invalid rating!");
         error.status = 400;
         throw error;
