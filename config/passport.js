@@ -8,7 +8,7 @@ const User = require('../models/user');
 passport.use(new FacebookTokenStrategy({
     clientID: process.env['FACEBOOK_APP_ID'],
     clientSecret: process.env['FACEBOOK_APP_SECRET'],
-    fbGraphVersion: 'v3.1'
+    fbGraphVersion: 'v3.2'
   }, function(accessToken, refreshToken, profile, done) {
     User.findOrCreate(
       {facebookId: profile.id},
