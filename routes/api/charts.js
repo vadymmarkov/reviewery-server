@@ -134,7 +134,7 @@ router.route('/:chartId/playlists')
   .post(passport.authenticate('facebook-token'), function(req, res) {
     Chart.findById(req.params.chartId).exec()
     .then(function(chart) {
-      return spotifyApi.getPlaylist(req.body.userId, req.body.playlistId)
+      return spotifyApi.getPlaylist(req.body.playlistId)
       .then(function(playlist) {
         chart.playlists.push(playlist);
         return chart.save();
