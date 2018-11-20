@@ -18,19 +18,19 @@ work with Spotify’s Web API
 # API Endpoints
 
 ```sh
-GET /users
-GET /users/:id
-GET /charts
-GET /charts/:id
-POST /charts
-DELETE /charts/:id
-PATCH /charts/:id/review
-GET /charts/:id/top
-GET /charts/:id/playlists
-GET /charts/:chartId/playlists/:playlistId
-DELETE /charts/:chartId/playlists/:playlistId
-PATCH /charts/:chartId/playlists/:playlistId/review
-GET /charts/:chartId/playlists/:playlistId/top
+GET /api/users
+GET /api/users/:id
+GET /api/charts
+GET /api/charts/:id
+POST /api/charts
+DELETE /api/charts/:id
+PATCH /api/charts/:id/review
+GET /api/charts/:id/top
+GET /api/charts/:id/playlists
+GET /api/charts/:chartId/playlists/:playlistId
+DELETE /api/charts/:chartId/playlists/:playlistId
+PATCH /api/charts/:chartId/playlists/:playlistId/review
+GET /api/charts/:chartId/playlists/:playlistId/top
 ```
 
 # Installation
