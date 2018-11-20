@@ -15,6 +15,8 @@ mongoose.Promise = require('bluebird');
 // Get notified if the connection was successful or not
 const db = mongoose.connection;
 
+mongoose.plugin(schema => { schema.options.usePushEach = true });
+
 db.once('open', () => {
   console.log(`Connected to the ${dbUrl} database`);
 });
